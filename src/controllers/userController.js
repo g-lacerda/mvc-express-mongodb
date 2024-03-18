@@ -1,8 +1,15 @@
-const { validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const User = require('../database/Migrations/User');
 
+// Valida usuário
+exports.validateUser = [
+    body('email').isEmail().withMessage('Insira um e-mail válido'),
+    body('senha').isLength({ min: 6 }).withMessage('A senha deve ter pelo menos 6 caracteres'),
+    body('descricao').optional().isLength({ max: 500 }).withMessage('A descrição deve ter no máximo 500 caracteres')
+];
+
 // Criar usuário
-exports.createUser = (req, res) => {
+exports.createUser = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
